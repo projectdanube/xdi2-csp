@@ -21,13 +21,13 @@ After that, just run
 
     mvn clean install jetty:run
 
-Then use an XDI client to send XDI messages to the registry graph
+Then use an XDI client to send XDI messages to the "registry" graph
 
     http://localhost:9301/registry
 
-Or use an XDI client to send XDI messages to one of the dynamic XDI graphs
+Or use an XDI client to send XDI messages to one of the "user" graphs
 
-    http://localhost:9301/graphs/[=]!:uuid:1111
+    http://localhost:9301/users/[=]!:uuid:1111
 
 Or access the server's status page at
 
