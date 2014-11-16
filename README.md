@@ -2,7 +2,8 @@
 <img src="http://projectdanube.github.com/xdi2/images/logo64.png"><br>
 
 This is a configuration profile of the [XDI2](http://github.com/projectdanube/xdi2) server for 
-hosting a dynamic number of XDI graphs. The configuration should be considered a template and may be
+hosting a dynamic number of XDI graphs. This is also known as the "cloud service provider" (CSP)
+use case. The configuration should be considered a template and may be
 adjusted according to one's needs.
 
 ### Information
