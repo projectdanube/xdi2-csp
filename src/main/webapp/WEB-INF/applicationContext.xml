@@ -9,14 +9,12 @@
 
 	<bean id="HttpTransport" class="xdi2.transport.impl.http.HttpTransport" init-method="init" destroy-method="shutdown">
 		<property name="httpMessagingTargetRegistry" ref="HttpMessagingTargetRegistry" />
-		<!-- DISABLED, SINCE THE ADMIN INTERFACE HAS NO SECURITY AT ALL
 		<property name="interceptors">
 			<util:list>
 				<bean class="xdi2.transport.impl.http.interceptor.impl.DebugHttpTransportInterceptor" />
 				<bean class="xdi2.transport.impl.http.interceptor.impl.StatusHttpTransportInterceptor" />
 			</util:list>
 		</property>
-		-->
 	</bean>
 
 	<!-- SPRING -->
@@ -98,12 +96,12 @@
 
 	<!-- MESSAGING TARGET FACTORY at /users/* -->
 
-	<bean id="registryGraphfactory" class="xdi2.core.impl.wrapped.file.FileWrapperGraphFactory">
+	<bean id="registryGraphFactory" class="xdi2.core.impl.wrapped.file.FileWrapperGraphFactory">
 		<property name="path" value="registry.xdi" />
 		<property name="mimeType" value="text/xdi;ordered=1" />
 	</bean>
 
-	<bean id="registryGraph" factory-bean="registryGraphfactory" factory-method="openGraph" />
+	<bean id="registryGraph" factory-bean="registryGraphFactory" factory-method="openGraph" />
 
 	<bean name="/users/*" class="xdi2.transport.impl.http.factory.impl.RegistryGraphMessagingTargetFactory">
 		<property name="prototypeMessagingTarget" ref="prototypeMessagingTarget" />
@@ -117,10 +115,10 @@
 		<property name="interceptors">
 			<util:list>
 				<bean class="xdi2.messaging.target.interceptor.impl.BootstrapInterceptor">
-					<property name="bootstrapOwner" value="[+]!:uuid:9999" />
+					<property name="bootstrapOwner" value="${cloudnumber}" />
 					<property name="bootstrapOwnerSynonyms">
 						<util:list>
-							<value>+testcsp</value>
+							<value>${cloudname}</value>
 						</util:list>
 					</property>
 					<property name="bootstrapRootLinkContract" value="true" />
@@ -149,7 +147,7 @@
 							<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
 							<property name="localSaltAndDigestSecretTokens">
 								<util:map>
-									<entry key="[+]!:uuid:9999" value="xdi2-digest:00000000-0000-0000-0000-000000000000:a7292f2347aef29a9e4c05d35764019106143a339b6e9bb39faee53103e1d6f55e49213d77d16a326a91bab0fc6885779d04e2e4470125720860cf54f872b3bb" />
+									<entry key="${cloudnumber}" value="${secrettokendigest}" />
 								</util:map>
 							</property>
 						</bean>
