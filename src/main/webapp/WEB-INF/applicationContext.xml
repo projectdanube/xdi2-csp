@@ -96,7 +96,7 @@
 		</property>
 	</bean>
 
-	<!-- MESSAGING TARGET FACTORY at /graphs/* -->
+	<!-- MESSAGING TARGET FACTORY at /users/* -->
 
 	<bean id="registryGraphfactory" class="xdi2.core.impl.wrapped.file.FileWrapperGraphFactory">
 		<property name="path" value="registry.xdi" />
@@ -105,7 +105,7 @@
 
 	<bean id="registryGraph" factory-bean="registryGraphfactory" factory-method="openGraph" />
 
-	<bean name="/graphs/*" class="xdi2.transport.impl.http.factory.impl.RegistryGraphMessagingTargetFactory">
+	<bean name="/users/*" class="xdi2.transport.impl.http.factory.impl.RegistryGraphMessagingTargetFactory">
 		<property name="prototypeMessagingTarget" ref="prototypeMessagingTarget" />
 		<property name="registryGraph" ref="registryGraph" />
 	</bean>
