@@ -10,8 +10,8 @@ adjusted according to one's needs.
 
 * [Configuration](https://github.com/projectdanube/xdi2-csp/wiki/Configuration)
 * [The registry graph](https://github.com/projectdanube/xdi2-csp/wiki/The-registry-graph)
-* [Adding XDI graphs](https://github.com/projectdanube/xdi2-csp/wiki/Adding-XDI-graphs)
-* [Removing XDI graphs](https://github.com/projectdanube/xdi2-csp/wiki/Removing-XDI-graphs)
+* [Creating XDI graphs](https://github.com/projectdanube/xdi2-csp/wiki/Adding-XDI-graphs)
+* [Deleting XDI graphs](https://github.com/projectdanube/xdi2-csp/wiki/Removing-XDI-graphs)
 
 ### How to build
 
