@@ -90,8 +90,8 @@
 					</property>
 					<property name="bootstrapMessageEnvelope">
 						<value>
-							($anon[$msg]!1$do/$do$keypair){$self}$msg$encrypt$keypair/$is#/$rsa$2048
-							($anon[$msg]!1$do/$do$keypair){$self}$msg$sig$keypair/$is#/$rsa$2048
+							($anon[$msg]*!1$do/$do$keypair){$self}$msg$encrypt$keypair/$is#/$rsa$2048
+							($anon[$msg]*!1$do/$do$keypair){$self}$msg$sig$keypair/$is#/$rsa$2048
 						</value>
 					</property>
 				</bean>
@@ -100,7 +100,7 @@
 				<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.AuthenticationSecretTokenInterceptor">
 					<property name="secretTokenAuthenticator">
 						<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.GraphSecretTokenAuthenticator">
-							<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
+							<property name="globalSalt" value="${secrettokenglobalsalt}" />
 							<property name="secretTokenGraph" ref="registryGraph" />
 						</bean>
 					</property>
@@ -111,7 +111,7 @@
 		<property name="contributors">
 			<util:list>
 				<bean class="xdi2.messaging.target.contributor.impl.digest.GenerateDigestSecretTokenContributor">
-					<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
+					<property name="globalSalt" value="${secrettokenglobalsalt}" />
 				</bean>
 				<bean class="xdi2.messaging.target.contributor.impl.keygen.GenerateKeyContributor" />
 				<bean class="xdi2.messaging.target.contributor.impl.connection.ConnectionRequestContributor" />
@@ -162,8 +162,8 @@
 					</property>
 					<property name="bootstrapMessageEnvelope">
 						<value>
-							($anon[$msg]!1$do/$do$keypair){$self}$msg$encrypt$keypair/$is#/$rsa$2048
-							($anon[$msg]!1$do/$do$keypair){$self}$msg$sig$keypair/$is#/$rsa$2048
+							($anon[$msg]*!1$do/$do$keypair){$self}$msg$encrypt$keypair/$is#/$rsa$2048
+							($anon[$msg]*!1$do/$do$keypair){$self}$msg$sig$keypair/$is#/$rsa$2048
 						</value>
 					</property>
 				</bean>
@@ -172,7 +172,7 @@
 				<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.AuthenticationSecretTokenInterceptor">
 					<property name="secretTokenAuthenticator">
 						<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.StaticSecretTokenAuthenticator">
-							<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
+							<property name="globalSalt" value="${secrettokenglobalsalt}" />
 							<property name="localSaltAndDigestSecretTokens">
 								<util:map>
 									<entry key="${cloudnumber}" value="${secrettokendigest}" />
@@ -194,7 +194,7 @@
 		<property name="contributors">
 			<util:list>
 				<bean class="xdi2.messaging.target.contributor.impl.digest.GenerateDigestSecretTokenContributor">
-					<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
+					<property name="globalSalt" value="${secrettokenglobalsalt}" />
 				</bean>
 				<bean class="xdi2.messaging.target.contributor.impl.keygen.GenerateKeyContributor" />
 				<bean class="xdi2.messaging.target.contributor.impl.connection.ConnectionRequestContributor" />
