@@ -5,16 +5,21 @@
 
 	<!-- XDI ENDPOINT REGISTRY AND TRANSPORT -->
 
-	<bean id="HttpMessagingTargetRegistry" class="xdi2.transport.impl.http.registry.HttpMessagingTargetRegistry" init-method="init" destroy-method="shutdown" />
+	<bean id="UriMessagingTargetRegistry" class="xdi2.transport.registry.impl.uri.UriMessagingTargetRegistry" init-method="init" destroy-method="shutdown" />
 
 	<bean id="HttpTransport" class="xdi2.transport.impl.http.HttpTransport" init-method="init" destroy-method="shutdown">
-		<property name="httpMessagingTargetRegistry" ref="HttpMessagingTargetRegistry" />
+		<property name="uriMessagingTargetRegistry" ref="UriMessagingTargetRegistry" />
 		<property name="interceptors">
 			<util:list>
 				<bean class="xdi2.transport.impl.http.interceptor.impl.DebugHttpTransportInterceptor" />
 				<bean class="xdi2.transport.impl.http.interceptor.impl.StatusHttpTransportInterceptor" />
 			</util:list>
 		</property>
+	</bean>
+
+	<bean id="WebSocketTransport" class="xdi2.transport.impl.websocket.WebSocketTransport" init-method="init" destroy-method="shutdown">
+		<property name="uriMessagingTargetRegistry" ref="UriMessagingTargetRegistry" />
+		<property name="endpointPath" value="/" />
 	</bean>
 
 	<!-- SPRING -->
@@ -30,12 +35,35 @@
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
+                <value>file:./etc/xdi2/xdi2-csp.properties</value>
                 <value>file:/etc/xdi2/xdi2-csp.properties</value>
             </list>
         </property>
-        <property name="ignoreResourceNotFound" value="false" />
+        <property name="ignoreResourceNotFound" value="true" />
         <property name="ignoreUnresolvablePlaceholders" value="false" />
     </bean>
+
+	<!-- XDI DISCOVERY CLIENT AND AGENT -->
+
+	<bean id="XdiDiscoveryClient" class="xdi2.discovery.XDIDiscoveryClient">
+		<property name="registryXdiClient" value="${discoveryservice}" />
+	</bean>
+
+	<bean id="XdiAgent" class="xdi2.agent.impl.XDIBasicAgent">
+		<property name="agentRouters">
+			<list>
+				<bean class="xdi2.agent.routing.impl.local.XDIMessagingTargetRegistryAgentRouter">
+					<property name="messagingTargetRegistry" ref="UriMessagingTargetRegistry" />
+				</bean>
+				<bean class="xdi2.agent.routing.impl.websocket.XDIWebSocketTransportAgentRouter">
+					<property name="webSocketTransport" ref="WebSocketTransport" />
+				</bean>
+				<bean class="xdi2.agent.routing.impl.http.XDIHttpDiscoveryAgentRouter">
+					<property name="xdiDiscoveryClient" ref="XdiDiscoveryClient" />
+				</bean>
+			</list>
+		</property>
+	</bean>
 
 	<!-- MESSAGING TARGET TO BE USED AS A PROTOTYPE FOR MESSAGING TARGET FACTORIES -->
 
@@ -62,8 +90,8 @@
 					</property>
 					<property name="bootstrapMessageEnvelope">
 						<value>
-							($anon[$msg]!1$do/$do$keypair){$self}$msg$encrypt$keypair/$is#/$rsa$2048
-							($anon[$msg]!1$do/$do$keypair){$self}$msg$sig$keypair/$is#/$rsa$2048
+							($anon[$msg]*!1$do/$do$keypair){$self}$msg$encrypt$keypair/$is#/$rsa$2048
+							($anon[$msg]*!1$do/$do$keypair){$self}$msg$sig$keypair/$is#/$rsa$2048
 						</value>
 					</property>
 				</bean>
@@ -72,7 +100,7 @@
 				<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.AuthenticationSecretTokenInterceptor">
 					<property name="secretTokenAuthenticator">
 						<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.GraphSecretTokenAuthenticator">
-							<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
+							<property name="globalSalt" value="${secrettokenglobalsalt}" />
 							<property name="secretTokenGraph" ref="registryGraph" />
 						</bean>
 					</property>
@@ -83,12 +111,12 @@
 		<property name="contributors">
 			<util:list>
 				<bean class="xdi2.messaging.target.contributor.impl.digest.GenerateDigestSecretTokenContributor">
-					<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
+					<property name="globalSalt" value="${secrettokenglobalsalt}" />
 				</bean>
 				<bean class="xdi2.messaging.target.contributor.impl.keygen.GenerateKeyContributor" />
 				<bean class="xdi2.messaging.target.contributor.impl.connection.ConnectionRequestContributor" />
 				<bean class="xdi2.messaging.target.contributor.impl.connection.InverseOperationContributor">
-					<property name="xdiDiscoveryClient" value="${discoveryservice}" />
+					<property name="xdiDiscoveryClient" ref="XdiDiscoveryClient" />
 				</bean>
 			</util:list>
 		</property>
@@ -103,7 +131,7 @@
 
 	<bean id="registryGraph" factory-bean="registryGraphFactory" factory-method="openGraph" />
 
-	<bean name="/users/*" class="xdi2.transport.impl.http.factory.impl.RegistryGraphMessagingTargetFactory">
+	<bean name="/users/*" class="xdi2.messaging.target.factory.impl.uri.RegistryUriMessagingTargetFactory">
 		<property name="prototypeMessagingTarget" ref="prototypeMessagingTarget" />
 		<property name="registryGraph" ref="registryGraph" />
 	</bean>
@@ -134,8 +162,8 @@
 					</property>
 					<property name="bootstrapMessageEnvelope">
 						<value>
-							($anon[$msg]!1$do/$do$keypair){$self}$msg$encrypt$keypair/$is#/$rsa$2048
-							($anon[$msg]!1$do/$do$keypair){$self}$msg$sig$keypair/$is#/$rsa$2048
+							($anon[$msg]*!1$do/$do$keypair){$self}$msg$encrypt$keypair/$is#/$rsa$2048
+							($anon[$msg]*!1$do/$do$keypair){$self}$msg$sig$keypair/$is#/$rsa$2048
 						</value>
 					</property>
 				</bean>
@@ -144,7 +172,7 @@
 				<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.AuthenticationSecretTokenInterceptor">
 					<property name="secretTokenAuthenticator">
 						<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.StaticSecretTokenAuthenticator">
-							<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
+							<property name="globalSalt" value="${secrettokenglobalsalt}" />
 							<property name="localSaltAndDigestSecretTokens">
 								<util:map>
 									<entry key="${cloudnumber}" value="${secrettokendigest}" />
@@ -154,17 +182,24 @@
 					</property>
 				</bean>
 				<bean class="xdi2.messaging.target.interceptor.impl.linkcontract.LinkContractInterceptor" />
+				<bean class="xdi2.messaging.target.interceptor.impl.push.PushCommandInterceptor">
+					<property name="pushCommandExecutor">
+						<bean class="xdi2.messaging.target.interceptor.impl.push.BasicPushCommandExecutor">
+							<property name="xdiAgent" ref="XdiAgent" />
+						</bean>
+					</property>
+				</bean>
 			</util:list>
 		</property>
 		<property name="contributors">
 			<util:list>
 				<bean class="xdi2.messaging.target.contributor.impl.digest.GenerateDigestSecretTokenContributor">
-					<property name="globalSalt" value="00000000-0000-0000-0000-000000000000" />
+					<property name="globalSalt" value="${secrettokenglobalsalt}" />
 				</bean>
 				<bean class="xdi2.messaging.target.contributor.impl.keygen.GenerateKeyContributor" />
 				<bean class="xdi2.messaging.target.contributor.impl.connection.ConnectionRequestContributor" />
 				<bean class="xdi2.messaging.target.contributor.impl.connection.InverseOperationContributor">
-					<property name="xdiDiscoveryClient" value="${discoveryservice}" />
+					<property name="xdiDiscoveryClient" ref="XdiDiscoveryClient" />
 				</bean>
 			</util:list>
 		</property>
