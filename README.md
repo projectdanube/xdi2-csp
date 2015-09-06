@@ -27,7 +27,7 @@ Then use an XDI client to send XDI messages to the "registry" graph
 
 Or use an XDI client to send XDI messages to one of the "user" graphs
 
-    http://localhost:9301/users/[=]!:uuid:1111
+    http://localhost:9301/users/=!:uuid:1111
 
 Or access the server's status page at
 
