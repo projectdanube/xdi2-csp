@@ -86,6 +86,12 @@
 							({$self}/$public)($do/$get){$self}$msg$encrypt$keypair/$is#/{}
 							({$self}/$public)$do/$get/{$self}$msg$sig$keypair&lt;$public&gt;&lt;$key&gt;
 							({$self}/$public)($do/$get){$self}$msg$sig$keypair/$is#/{}
+							&lt;$xdi&gt;&lt;$uri&gt;/&amp;/"${uri.base}users/{$self}"
+							&lt;$websocket&gt;&lt;$xdi&gt;&lt;$uri&gt;/&amp;/"${uri.base.websocket}users/{$self}"
+							&lt;$connect&gt;&lt;$xdi&gt;&lt;$uri&gt;/&amp;/"${uri.connect}"
+							({$self}/$public)$do/$get/&lt;$xdi&gt;&lt;$uri&gt;
+							({$self}/$public)$do/$get/&lt;$websocket&gt;&lt;$xdi&gt;&lt;$uri&gt;
+							({$self}/$public)$do/$get/&lt;$connect&gt;&lt;$xdi&gt;&lt;$uri&gt;
 						</value>
 					</property>
 					<property name="bootstrapMessageEnvelope">
@@ -95,8 +101,8 @@
 						</value>
 					</property>
 				</bean>
-				<bean class="xdi2.messaging.target.interceptor.impl.RefInterceptor" />
 				<bean class="xdi2.messaging.target.interceptor.impl.ToInterceptor" />
+				<bean class="xdi2.messaging.target.interceptor.impl.RefInterceptor" />
 				<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.AuthenticationSecretTokenInterceptor">
 					<property name="secretTokenAuthenticator">
 						<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.GraphSecretTokenAuthenticator">
@@ -105,7 +111,36 @@
 						</bean>
 					</property>
 				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.authentication.signature.AuthenticationSignatureInterceptor">
+					<property name="signatureValidators">
+						<util:list>
+							<bean class="xdi2.core.security.validate.RSADiscoveryPublicKeySignatureValidator">
+								<property name="xdiDiscoveryClient" ref="XdiDiscoveryClient" />
+							</bean>
+						</util:list>
+					</property>
+				</bean>
 				<bean class="xdi2.messaging.target.interceptor.impl.linkcontract.LinkContractInterceptor" />
+				<bean class="xdi2.messaging.target.interceptor.impl.signing.SigningInterceptor">
+					<property name="signatureCreator">
+						<bean class="xdi2.core.security.sign.RSAGraphPrivateKeySignatureCreator" />
+					</property>
+				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.connect.ConnectInterceptor">
+					<property name="xdiAgent" ref="XdiAgent" />
+				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.send.SendInterceptor">
+					<property name="xdiAgent" ref="XdiAgent" />
+				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.push.PushInInterceptor" />
+				<bean class="xdi2.messaging.target.interceptor.impl.push.PushOutInterceptor">
+					<property name="pushGateway">
+						<bean class="xdi2.messaging.target.interceptor.impl.push.BasicPushGateway">
+							<property name="xdiAgent" ref="XdiAgent" />
+						</bean>
+					</property>
+				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.push.PushResultInterceptor" />
 			</util:list>
 		</property>
 		<property name="contributors">
@@ -114,10 +149,6 @@
 					<property name="globalSalt" value="${secrettokenglobalsalt}" />
 				</bean>
 				<bean class="xdi2.messaging.target.contributor.impl.keygen.GenerateKeyContributor" />
-				<bean class="xdi2.messaging.target.contributor.impl.connection.ConnectionRequestContributor" />
-				<bean class="xdi2.messaging.target.contributor.impl.connection.InverseOperationContributor">
-					<property name="xdiDiscoveryClient" ref="XdiDiscoveryClient" />
-				</bean>
 			</util:list>
 		</property>
 	</bean>
@@ -158,6 +189,12 @@
 							({$self}/$public)($do/$get){$self}$msg$encrypt$keypair/$is#/{}
 							({$self}/$public)$do/$get/{$self}$msg$sig$keypair&lt;$public&gt;&lt;$key&gt;
 							({$self}/$public)($do/$get){$self}$msg$sig$keypair/$is#/{}
+							&lt;$xdi&gt;&lt;$uri&gt;/&amp;/"${uri.base}registry"
+							&lt;$websocket&gt;&lt;$xdi&gt;&lt;$uri&gt;/&amp;/"${uri.base.websocket}registry"
+							&lt;$connect&gt;&lt;$xdi&gt;&lt;$uri&gt;/&amp;/"${uri.connect}"
+							({$self}/$public)$do/$get/&lt;$xdi&gt;&lt;$uri&gt;
+							({$self}/$public)$do/$get/&lt;$websocket&gt;&lt;$xdi&gt;&lt;$uri&gt;
+							({$self}/$public)$do/$get/&lt;$connect&gt;&lt;$xdi&gt;&lt;$uri&gt;
 						</value>
 					</property>
 					<property name="bootstrapMessageEnvelope">
@@ -167,8 +204,8 @@
 						</value>
 					</property>
 				</bean>
-				<bean class="xdi2.messaging.target.interceptor.impl.RefInterceptor" />
 				<bean class="xdi2.messaging.target.interceptor.impl.ToInterceptor" />
+				<bean class="xdi2.messaging.target.interceptor.impl.RefInterceptor" />
 				<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.AuthenticationSecretTokenInterceptor">
 					<property name="secretTokenAuthenticator">
 						<bean class="xdi2.messaging.target.interceptor.impl.authentication.secrettoken.StaticSecretTokenAuthenticator">
@@ -181,14 +218,36 @@
 						</bean>
 					</property>
 				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.authentication.signature.AuthenticationSignatureInterceptor">
+					<property name="signatureValidators">
+						<util:list>
+							<bean class="xdi2.core.security.validate.RSADiscoveryPublicKeySignatureValidator">
+								<property name="xdiDiscoveryClient" ref="XdiDiscoveryClient" />
+							</bean>
+						</util:list>
+					</property>
+				</bean>
 				<bean class="xdi2.messaging.target.interceptor.impl.linkcontract.LinkContractInterceptor" />
-				<bean class="xdi2.messaging.target.interceptor.impl.push.PushCommandInterceptor">
-					<property name="pushCommandExecutor">
-						<bean class="xdi2.messaging.target.interceptor.impl.push.BasicPushCommandExecutor">
+				<bean class="xdi2.messaging.target.interceptor.impl.signing.SigningInterceptor">
+					<property name="signatureCreator">
+						<bean class="xdi2.core.security.sign.RSAGraphPrivateKeySignatureCreator" />
+					</property>
+				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.connect.ConnectInterceptor">
+					<property name="xdiAgent" ref="XdiAgent" />
+				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.send.SendInterceptor">
+					<property name="xdiAgent" ref="XdiAgent" />
+				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.push.PushInInterceptor" />
+				<bean class="xdi2.messaging.target.interceptor.impl.push.PushOutInterceptor">
+					<property name="pushGateway">
+						<bean class="xdi2.messaging.target.interceptor.impl.push.BasicPushGateway">
 							<property name="xdiAgent" ref="XdiAgent" />
 						</bean>
 					</property>
 				</bean>
+				<bean class="xdi2.messaging.target.interceptor.impl.push.PushResultInterceptor" />
 			</util:list>
 		</property>
 		<property name="contributors">
@@ -197,10 +256,6 @@
 					<property name="globalSalt" value="${secrettokenglobalsalt}" />
 				</bean>
 				<bean class="xdi2.messaging.target.contributor.impl.keygen.GenerateKeyContributor" />
-				<bean class="xdi2.messaging.target.contributor.impl.connection.ConnectionRequestContributor" />
-				<bean class="xdi2.messaging.target.contributor.impl.connection.InverseOperationContributor">
-					<property name="xdiDiscoveryClient" ref="XdiDiscoveryClient" />
-				</bean>
 			</util:list>
 		</property>
 	</bean>
