@@ -1,5 +1,7 @@
-.project
+registry.xdi
+log4j.log
 .classpath
+.project
 /.settings/
-/target
-/registry.xdi
+/bin/
+/target/
